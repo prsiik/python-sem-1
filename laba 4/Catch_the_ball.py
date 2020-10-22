@@ -93,20 +93,20 @@ def move_ball(x, y, r, vx, vy):
     return(x, y, vx, vy)    
 
 
-def ball_caught(x_mouse, y_mouse, x_ball, y_ball, r_ball):
+def ball_caught(x_m, y_m, x_bl, y_bl, r_bl):
     '''
     Checks if the ball's been caught
     Parameters
     ----------
-    x_mouse, y_mouse : coordinates of mouse
-    x_ball, y_ball : coordinates of the center of the ball
-    r_ball : radius of the ball
+    x_m, y_m : coordinates of mouse
+    x_bl, y_bl : coordinates of the center of the ball
+    r_bl : radius of the ball
     Return 
     -------
     caught : bool.
     '''
-    R = ((x_ball - x_mouse) ** 2 + (y_ball - y_mouse) ** 2) ** (1/2)
-    if(R <= r_ball):
+    R = ((x_bl - x_m) ** 2 + (y_bl - y_m) ** 2) ** (1/2)
+    if(R <= r_bl):
         caught = True
     else:
         caught = False
@@ -206,8 +206,8 @@ while not finished:
             finished = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             for b in balls:
-                x_mouse, y_mouse = event.pos
-                caught = ball_caught(x_mouse, y_mouse, b[0], b[1], b[2])
+                x_m, y_m = event.pos
+                caught = ball_caught(x_m, y_m, b[0], b[1], b[2])
                 if caught:
                     Score += 10
                     balls.remove(b)
