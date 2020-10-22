@@ -116,7 +116,7 @@ def new_square():
     '''
     Creates a new square
     Parameters
-    a : length of a side of the cube
+    a : length of a side of the square 
     xc, yc : coordinates of upper left corner
     vyc : y-velocity
     Returns
