@@ -14,15 +14,18 @@ CYAN = (0, 255, 255)
 BLACK = (0, 0, 0)
 AQUA = (0,255,255)
 LIGHTBLUE = (191,239,255)
-COLORS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN, AQUA, LIGHTBLUE]
+COLOURS = [RED, BLUE, YELLOW, GREEN, MAGENTA, CYAN, AQUA, LIGHTBLUE]
 lightpink = (255,182,193)
+square_colour = (154,50,205)
 
 FPS = 150
 width=1200
 height=600
+g=0.09
 
 Score = 0
 balls = []
+squares = []
 screen = pygame.display.set_mode((width,height))
 
 
@@ -41,21 +44,23 @@ def new_ball():
     x = randint(100, width - 100)
     y = randint(100, height - 100)
     r = randint(10, 100)
-    ball_color = randint(0, 7)
+    ball_colour = randint(0, 7)
     vx = choice([-2, -1, 1, 2])
     vy = choice([-2, -1, 1, 2])
-    return(x, y, r, ball_color, vx, vy)
+    return(x, y, r, ball_colour, vx, vy)
 
-def draw_ball(x, y, r, ball_color):
+
+def draw_ball(x, y, r, ball_colour):
     '''
     this draws a ball
     Parameters
     x, y : center of the ball
     r : radius
-    ball_color : parameter that defines the color
+    ball_colour : parameter that defines the color
     return None
     '''
-    circle(screen, COLORS[ball_color], (x, y), r)
+    circle(screen, COLOURS[ball_colour], (x, y), r)
+
     
 def move_ball(x, y, r, vx, vy):
     '''
@@ -87,6 +92,7 @@ def move_ball(x, y, r, vx, vy):
     x, y = x + vx, y + vy
     return(x, y, vx, vy)    
 
+
 def ball_caught(x_mouse, y_mouse, x_ball, y_ball, r_ball):
     '''
     Checks if the ball's been caught
@@ -106,23 +112,95 @@ def ball_caught(x_mouse, y_mouse, x_ball, y_ball, r_ball):
         caught = False
     return caught
 
+def new_square():
+    '''
+    Creates a new square
+    Parameters
+    a : length of a side of the cube
+    xc, yc : coordinates of upper left corner
+    vyc : y-velocity
+    Returns
+    -------
+    None.
+    '''
+    a = randint(50, 70)
+    xc = randint(100, width - 100)
+    yc = -a
+    vyc = 0
+    print(xc, yc, a, vyc)
+    return(xc, yc, a, vyc)
+ 
+ 
+def draw_square(xc, yc, a):
+    '''
+    Draws the square
+    Parameters
+    ----------
+    xc, yc : current coordinates of upper left corner
+    a : length of a side.
+    Returns
+    -------
+    None.
+    '''
+    rect(screen, square_colour, (xc, yc, a, a))
 
+def move_square(h, v):
+    '''
+    Changes y coordinate of the square
+    Parameters
+    h : y coordinate
+    v : y velocity
+    '''
+    v -= g
+    h -= v
+    return(h, v)
+
+
+def square_caught(x_m, y_m, x_sq, y_sq, a_sq):
+    '''
+    Checks if the square has been caught
+    Parameters
+    ----------
+    x_m, y_m : coordinates of mouse
+    x_sq, y_sq : coordinates of the upper left corner
+    a_sq : length of a side
+    Return 
+    -------
+    caught : bool.
+    '''
+    if abs(x_m-x_sq) < a_sq and abs(y_m-y_sq) < a_sq:
+        return True
+    else:
+        return False
 
 
 pygame.display.update()
 clock = pygame.time.Clock()
 finished = False
 
-x, y, r, ball_color, vx, vy = new_ball()
+x, y, r, ball_colour, vx, vy = new_ball()
 alive = 1
-balls.append([x, y, r, ball_color, vx, vy, alive])
+balls.append([x, y, r, ball_colour, vx, vy, alive])
 
+xc, yc, a, vyc = new_square()
+squares.append([xc, yc, a, vyc])
+draw_square(xc, yc, a)
 
 while not finished:
     clock.tick(FPS)
     for b in balls:
         b[0], b[1], b[4], b[5] = move_ball(b[0], b[1], b[2], b[4], b[5])
         draw_ball(b[0], b[1], b[2], b[3])
+        
+        
+    for s in squares:
+        s[1], s[3] = move_square(s[1], s[3])
+        if(s[1] > height):
+            squares.remove(s)
+        else:
+            draw_square(s[0], s[1], s[2])
+            
+            
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             finished = True
@@ -134,21 +212,28 @@ while not finished:
                     Score += 10
                     balls.remove(b)
                     break
+            for s in squares:
+                x_m, y_m = event.pos
+                caught = square_caught(x_m, y_m, s[0], s[1], s[2])
+                if caught:
+                    Score += 30
+                    squares.remove(s)
+                    break
+                
                 
     scr = scr_font.render("Your score: " + str(Score), 5, lightpink) # score 
     screen.blit(scr, (width - txt_x, txt_y))
-
-    for b in balls:
-        if b[6] == 0:
-            balls.remove(b)
-            print('removed')
+    
     
     if len(balls) < 10:
-        x, y, r, ball_color, vx, vy = new_ball()
+        x, y, r, ball_colour, vx, vy = new_ball()
         alive = 1
-        balls.append([x, y, r, ball_color, vx, vy, alive])
-        
+        balls.append([x, y, r, ball_colour, vx, vy, alive])
     
+    if len(squares) < 5:
+        xc, yc, a, vyc = new_square()
+        squares.append([xc, yc, a, vyc])
+        
     pygame.display.update()
     screen.fill(BLACK)
 
