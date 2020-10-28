@@ -304,7 +304,7 @@ def new_game(event=''):
                 # canv.bind('<Button-1>', '')
             # canv.bind('<ButtonRelease-1>', '')
             if t2.live == 0 and t1.live == 0:
-                canv.itemconfig(screen1, text='Вы уничтожили цель за ' + str(bullet) + ' выстрелов')
+                canv.itemconfig(screen1, text='You hit all targets in ' + str(bullet) + ' shots')
 
         for i in range(len(balls)):
             if balls[i].live <= 0:
